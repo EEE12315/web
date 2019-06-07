@@ -2,6 +2,7 @@ package com.test.test.controller;
 
 
 //import com.test.test.entity.FormEntity;
+import com.test.test.entity.FormEntity;
 import com.test.test.entity.GoodEntity;
 import com.test.test.entity.ResultCause;
 import com.sun.org.apache.regexp.internal.RE;
@@ -17,12 +18,12 @@ import java.util.List;
 @Controller
 @RequestMapping("/")
 public class HelloWorldController {
-    @RequestMapping(value = "/hello" ,method = RequestMethod.GET)
+    @RequestMapping(value = "/hello" ,method = {RequestMethod.GET, RequestMethod.POST})
     public String sayHello() {
         return "index";
     }
 
-    @RequestMapping(value = "/getGoodList",method = RequestMethod.GET)
+    @RequestMapping(value = "/getGoodList",method = {RequestMethod.GET,RequestMethod.POST})
     public @ResponseBody List<GoodEntity> getGoodList(){
         List<GoodEntity> goodEntities = new ArrayList<>();
         goodEntities.add(new GoodEntity(1,"iphone",5000));
@@ -31,10 +32,9 @@ public class HelloWorldController {
         return goodEntities;
     }
 
-    @RequestMapping(value = "/checkToken", method = RequestMethod.GET)
+    @RequestMapping(value = "/checkToken", method = {RequestMethod.GET,RequestMethod.POST})
     public @ResponseBody
     ResultCause checkToken(String token){
-        // 这里的1因为是只会用在这一个地方，所以没有专门设置一个状态来描述
         if (token.equals("1")){
             return new ResultCause(ResultCause.SUCCESS_CODE,"验证成功");
         }else {
@@ -42,10 +42,26 @@ public class HelloWorldController {
         }
     }
 
-    @RequestMapping(value = "/form",method = RequestMethod.POST)
+    @RequestMapping(value = "/form",method = {RequestMethod.GET,RequestMethod.POST})
+    public @ResponseBody ResultCause testForm(FormEntity form){
+        System.out.println(form.getName()+"'s is : " + form.getName());
+        return new ResultCause("200",form.getName()+"'s is : " + form.getSignature());
+    }
+
+    @RequestMapping(value = "ajax_test", method = {RequestMethod.GET,RequestMethod.POST})
     public @ResponseBody
-    ResultCause testForm(String name, String signature){
-        System.out.println(name+"'s is : "+signature);
-        return new ResultCause("200",name+"'s is : "+signature);
+    ResultCause testAjax(FormEntity form){
+        System.out.println(form.getName()+"'s is : "+form.getSignature());
+        return new ResultCause("200",form.getName()+"'s is : "+form.getSignature());
+    }
+
+    @RequestMapping(value = "get_list", method = {RequestMethod.GET,RequestMethod.POST})
+    public @ResponseBody
+    List<ResultCause> getList(){
+        List<ResultCause> resultCauses = new ArrayList<>();
+        resultCauses.add(new ResultCause("200","ToMax"));
+        resultCauses.add(new ResultCause("300","Java"));
+        resultCauses.add(new ResultCause("400","Hello World"));
+        return resultCauses;
     }
 }
